@@ -103,6 +103,11 @@ target_link_libraries(testsupport Qt5::Core Qt5::Concurrent Qt5::Widgets Qt5::Te
 add_unit_test(NAME testauthenticationfactorparsing SOURCES TestAuthenticationFactorParsing.cpp
         LIBS testsupport ${TEST_LIBRARIES})
 
+if(WIN32 AND MSVC)
+    add_unit_test(NAME testwindowsfido2 SOURCES TestWindowsFido2.cpp
+            LIBS keepassxc_core Qt5::Test Qt5::Widgets)
+endif()
+
 add_unit_test(NAME testgroup SOURCES TestGroup.cpp
         LIBS testsupport ${TEST_LIBRARIES})
 

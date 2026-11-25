@@ -74,7 +74,7 @@ QSharedPointer<QByteArray> AuthenticationFactorGroup::getRawKey(QSharedPointer<A
     bool groupContributed = false;
 
     for (const auto& factor : getFactors()) {
-        auto unwrappedKey = factor->unwrapKey(userData);
+        auto unwrappedKey = factor->unwrapKey(userData, m_challenge);
 
         if (unwrappedKey.isEmpty()) {
             qDebug() << QString("FIDO2: Factor '%1' did not contribute key material").arg(factor->getName());
@@ -83,7 +83,7 @@ QSharedPointer<QByteArray> AuthenticationFactorGroup::getRawKey(QSharedPointer<A
 
         qDebug() << QString("FIDO2: Got a key part from factor '%1'").arg(factor->getName());
 
-        m_key.insert(m_key.end(), unwrappedKey.begin(), unwrappedKey.end());
+        m_key.assign(unwrappedKey.begin(), unwrappedKey.end());
         groupContributed = true;
         break;
     }

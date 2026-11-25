@@ -26,5 +26,6 @@ public:
     ~PasswordAuthenticationFactor() override = default;
 
 protected:
-    QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData) const override;
+    QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                const QByteArray& challenge) const override;
 };

@@ -35,8 +35,6 @@ KdbxXmlAuthenticationFactorReader::readAuthenticationFactors(Database* db, const
 
     m_xml.clear();
 
-    qDebug() << QString("FIDO2: Read authentication factor XML: %1").arg(authenticationFactorXml);
-
     auto result = QSharedPointer<AuthenticationFactorInfo>::create();
 
     m_xml.addData(authenticationFactorXml);

@@ -27,9 +27,11 @@ public:
 
     void setCredentialID(const QByteArray& credentialID);
     QByteArray getCredentialID() const;
+    static QString relyingPartyId();
 
 protected:
-    QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData) const override;
+    QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                const QByteArray& challenge) const override;
 
     QByteArray m_credentialID;
 };

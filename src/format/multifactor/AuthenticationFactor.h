@@ -41,7 +41,7 @@ public:
         AES_CBC,
     };
 
-    virtual QByteArray unwrapKey(QSharedPointer<AuthenticationFactorUserData> userData) const;
+    QByteArray unwrapKey(QSharedPointer<AuthenticationFactorUserData> userData, const QByteArray& challenge) const;
 
     const QString& getFactorType() const;
 
@@ -55,7 +55,8 @@ public:
     void setWrappedKey(const QByteArray& key);
 
 protected:
-    virtual QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData) const;
+    virtual QByteArray getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                        const QByteArray& challenge) const;
 
     QString m_name = "<Unnamed factor>";
     KeyType m_keyType = KeyType::NONE;
