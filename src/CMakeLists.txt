@@ -281,6 +281,7 @@ if(WIN32)
             gui/osutils/winutils/WinUtils.cpp)
     if (MSVC)
         list(APPEND gui_SOURCES quickunlock/WindowsHello.cpp)
+        list(APPEND core_SOURCES keys/drivers/WindowsFido2.cpp)
     endif()
 endif()
 
