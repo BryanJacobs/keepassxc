@@ -30,8 +30,10 @@ PasswordAuthenticationFactor::PasswordAuthenticationFactor(QSharedPointer<Authen
     m_factorType = FACTOR_TYPE_PASSWORD_SHA256;
 }
 
-QByteArray PasswordAuthenticationFactor::getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData) const
+QByteArray PasswordAuthenticationFactor::getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                                         const QByteArray& challenge) const
 {
+    Q_UNUSED(challenge);
     if (!userData) {
         return {};
     }

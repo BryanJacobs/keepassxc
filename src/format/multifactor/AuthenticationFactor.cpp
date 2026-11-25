@@ -18,6 +18,8 @@
 #include "AuthenticationFactor.h"
 #include "AESCBCFactorKeyDerivation.h"
 
+#include <botan/mem_ops.h>
+
 #include <QDebug>
 #include <QSharedPointer>
 
@@ -75,18 +77,22 @@ const QString& AuthenticationFactor::getFactorType() const
     return m_factorType;
 }
 
-QByteArray AuthenticationFactor::unwrapKey(QSharedPointer<AuthenticationFactorUserData> userData) const
+QByteArray AuthenticationFactor::unwrapKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                           const QByteArray& challenge) const
 {
-    auto unwrappingKey = getUnwrappingKey(userData);
-
-    auto wrappedKey = getWrappedKey();
-
     if (!m_derivation) {
         qCritical() << QString("FIDO2: Attempted to unwrap factor '%1' with null key derivation method").arg(getName());
         return {};
     }
 
-    if (m_derivation->derive(wrappedKey, unwrappingKey, getKeySalt())) {
+    auto unwrappingKey = getUnwrappingKey(userData, challenge);
+    if (unwrappingKey.isEmpty()) {
+        return {};
+    }
+    auto wrappedKey = getWrappedKey();
+    auto success = m_derivation->derive(wrappedKey, unwrappingKey, getKeySalt());
+    Botan::secure_scrub_memory(unwrappingKey.data(), unwrappingKey.size());
+    if (success) {
         // "wrappedKey" is now unwrapped!
         return {wrappedKey};
     }
@@ -96,9 +102,11 @@ QByteArray AuthenticationFactor::unwrapKey(QSharedPointer<AuthenticationFactorUs
     return {};
 }
 
-QByteArray AuthenticationFactor::getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData) const
+QByteArray AuthenticationFactor::getUnwrappingKey(QSharedPointer<AuthenticationFactorUserData> userData,
+                                                 const QByteArray& challenge) const
 {
     Q_UNUSED(userData);
+    Q_UNUSED(challenge);
     // This shouldn't happen - it means we didn't understand the factor type?
     qWarning() << "FIDO2: Attempted to get unwrapping key from generic AuthenticationFactor";
     return {};

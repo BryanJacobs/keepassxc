@@ -96,11 +96,16 @@ bool KdbxReader::readDatabase(QIODevice* device, QSharedPointer<const CompositeK
         return false;
     }
 
+    // Header-only reads must not touch hardware or require credentials.
+    if (key.isNull()) {
+        return true;
+    }
+
     auto authenticationFactorInfo = m_db->authenticationFactorInfo();
     if (!authenticationFactorInfo.isNull()) {
         // Augment (or replace) the given composite key with factors from the header
         auto newCompositeKey = QSharedPointer<CompositeKey>::create();
-        if (!authenticationFactorInfo->isComprehensive() && !key.isNull()) {
+        if (!authenticationFactorInfo->isComprehensive()) {
             // New composite should start with old key info
             for (const auto& keyPart : key->keys()) {
                 newCompositeKey->addKey(keyPart);
@@ -117,11 +122,6 @@ bool KdbxReader::readDatabase(QIODevice* device, QSharedPointer<const CompositeK
         newCompositeKey->addKey(headerInfoKey);
 
         key = newCompositeKey;
-    }
-
-    // No key provided - don't proceed to load payload
-    if (key.isNull()) {
-        return true;
     }
 
     // read payload
